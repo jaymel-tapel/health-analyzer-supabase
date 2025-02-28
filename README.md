@@ -101,6 +101,137 @@ All endpoints accept POST requests with the following format:
 - `/nutri-snap` - Analyze food nutrition
 - `/poop-health` - Analyze stool health
 
+## Sample Responses
+
+### Dental Check Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "analysis": {
+      "issues": ["Mild gingivitis", "Potential early enamel erosion"],
+      "recommendations": [
+        "Regular brushing with fluoride toothpaste",
+        "Daily flossing",
+        "Consider a dental checkup within the next 3 months"
+      ],
+      "overall_health": "Good with minor concerns",
+      "urgency_level": "Low"
+    },
+    "created_at": "2023-06-15T12:34:56.789Z",
+    "id": "a1b2c3d4-e5f6-7890-abcd-1234567890ab"
+  }
+}
+```
+
+### Skin Tracker Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "analysis": {
+      "condition_type": "Rash",
+      "severity": "Mild",
+      "characteristics": ["Red", "Slightly raised", "Non-scaly"],
+      "possible_causes": ["Contact dermatitis", "Mild allergic reaction"],
+      "recommendations": [
+        "Keep the area clean and dry",
+        "Avoid potential irritants",
+        "Apply over-the-counter hydrocortisone if not improving"
+      ],
+      "should_see_doctor": false
+    },
+    "created_at": "2023-06-16T10:22:33.456Z",
+    "id": "b2c3d4e5-f6a7-8901-bcde-2345678901cd"
+  }
+}
+```
+
+### Posture Check Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "analysis": {
+      "posture_issues": ["Forward head posture", "Rounded shoulders"],
+      "severity": "Moderate",
+      "exercises": [
+        {
+          "name": "Chin tucks",
+          "description": "Sit up straight, pull your chin back creating a 'double chin', hold for 5 seconds. Repeat 10 times, 3 sets daily."
+        },
+        {
+          "name": "Doorway chest stretch",
+          "description": "Stand in a doorway with arms on the frame at 90 degrees, step forward with one foot and lean forward to feel a stretch in the chest. Hold for 30 seconds, repeat 3 times."
+        }
+      ],
+      "recommendations": [
+        "Take frequent breaks from sitting",
+        "Adjust computer screen to eye level",
+        "Consider an ergonomic chair"
+      ]
+    },
+    "created_at": "2023-06-17T15:45:12.789Z",
+    "id": "c3d4e5f6-a7b8-9012-cdef-3456789012de"
+  }
+}
+```
+
+### Nutri-Snap Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "analysis": {
+      "food_items": ["Grilled chicken breast", "Quinoa", "Steamed broccoli", "Olive oil"],
+      "nutritional_info": {
+        "calories": 420,
+        "protein": 35,
+        "carbs": 30,
+        "fat": 15,
+        "fiber": 8
+      },
+      "health_score": 8.5,
+      "recommendations": [
+        "Well-balanced meal with good protein content",
+        "Consider adding some healthy fats like avocado",
+        "Good portion control"
+      ]
+    },
+    "created_at": "2023-06-18T19:12:45.123Z",
+    "id": "d4e5f6a7-b8c9-0123-defg-456789012345"
+  }
+}
+```
+
+### Poop Health Response
+
+```json
+{
+  "success": true,
+  "data": {
+    "analysis": {
+      "bristol_type": 4,
+      "color": "Medium brown",
+      "abnormalities": [],
+      "hydration_level": "Well hydrated",
+      "recommendations": [
+        "Normal, healthy stool",
+        "Continue maintaining good hydration",
+        "Current fiber intake appears adequate"
+      ],
+      "should_consult_doctor": false
+    },
+    "created_at": "2023-06-19T08:30:15.987Z",
+    "id": "e5f6a7b8-c9d0-1234-efgh-5678901234ef"
+  }
+}
+```
+
 ## Database Schema
 
 The project uses the following database tables:

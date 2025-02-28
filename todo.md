@@ -98,8 +98,8 @@
 
 ## 8. Deployment
 - [x] Configure production environment secrets
-- [ ] Deploy shared utilities
-- [ ] Deploy each Edge Function individually
+- [x] Deploy shared utilities
+- [x] Deploy each Edge Function individually
 - [ ] Set up proper domain routing in Supabase
 - [x] Configure CORS for production
 - [ ] Run final integration tests
