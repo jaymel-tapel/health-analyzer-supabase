@@ -64,15 +64,66 @@ export async function analyzeImage(imageBase64: string, prompt: string): Promise
     const content = result.choices[0].message.content;
     
     // Check if the content indicates an inability to analyze the image
-    if (content.toLowerCase().includes('unable to analyze') || 
-        content.toLowerCase().includes('cannot analyze') || 
-        content.toLowerCase().includes('could not analyze') ||
-        content.toLowerCase().includes('not able to analyze') ||
-        content.toLowerCase().includes('cannot see') ||
-        content.toLowerCase().includes('cannot identify') ||
-        content.toLowerCase().includes('unclear image') ||
-        content.toLowerCase().includes('no visible')) {
-      return { text: content, success: false };
+    // Expanded list of patterns that indicate analysis failure
+    const unableToAnalyzePatterns = [
+      // Direct statements about inability
+      'unable to analyze',
+      'cannot analyze',
+      'could not analyze',
+      'not able to analyze',
+      'can\'t analyze',
+      'cannot see',
+      'cannot identify',
+      'cannot determine',
+      'unable to identify',
+      'unable to see',
+      'unable to assess',
+      'unable to provide',
+      'cannot provide',
+      'cannot properly analyze',
+      'cannot make out',
+      
+      // Image quality issues
+      'unclear image',
+      'image is unclear',
+      'image is too blurry',
+      'blurry image',
+      'poor quality image',
+      'low resolution',
+      'insufficient detail',
+      'not clear enough',
+      'image quality is',
+      'difficult to see',
+      
+      // Content visibility issues
+      'no visible',
+      'not visible',
+      'nothing visible',
+      'cannot visualize',
+      'cannot observe',
+      'not showing',
+      'not present in',
+      'insufficient visibility',
+      
+      // Inappropriate content
+      'inappropriate content',
+      'inappropriate image',
+      'offensive content',
+      'violates guidelines',
+      'not appropriate',
+      
+      // Request for better image
+      'better image is required',
+      'clearer image',
+      'higher quality image',
+      'need a better',
+      'please provide a clearer'
+    ];
+    
+    for (const pattern of unableToAnalyzePatterns) {
+      if (content.toLowerCase().includes(pattern)) {
+        return { text: content, success: false };
+      }
     }
     
     return { text: content, success: true };
@@ -102,7 +153,7 @@ export function parseAnalysisResults(analysisText: string): {
     };
     
     // Try to extract sections using regex patterns
-    const concernsMatch = analysisText.match(/concerns:?.*?\n((?:.+\n?)+?)(?:\n\n|\n[A-Za-z]+:|\Z)/i);
+    const concernsMatch = analysisText.match(/(?:concerns|potential concerns|issues|potential issues):?.*?\n((?:.+\n?)+?)(?:\n\n|\n[A-Za-z]+:|\Z)/i);
     if (concernsMatch && concernsMatch[1]) {
       result.concerns = concernsMatch[1]
         .split('\n')
@@ -110,7 +161,7 @@ export function parseAnalysisResults(analysisText: string): {
         .filter(Boolean);
     }
     
-    const recommendationsMatch = analysisText.match(/recommendations:?.*?\n((?:.+\n?)+?)(?:\n\n|\Z)/i);
+    const recommendationsMatch = analysisText.match(/(?:recommendations|suggested actions|advice|suggestions):?.*?\n((?:.+\n?)+?)(?:\n\n|\Z)/i);
     if (recommendationsMatch && recommendationsMatch[1]) {
       result.recommendations = recommendationsMatch[1]
         .split('\n')
