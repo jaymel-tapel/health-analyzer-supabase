@@ -8,9 +8,9 @@ import { logError } from './utils.ts';
  * 
  * @param imageBase64 Base64 encoded image data
  * @param prompt System prompt for OpenAI analysis
- * @returns Analyzed text response
+ * @returns Object with analysis text and success status
  */
-export async function analyzeImage(imageBase64: string, prompt: string): Promise<string> {
+export async function analyzeImage(imageBase64: string, prompt: string): Promise<{ text: string; success: boolean }> {
   try {
     const apiKey = Deno.env.get('OPENAI_API_KEY');
     
@@ -58,13 +58,27 @@ export async function analyzeImage(imageBase64: string, prompt: string): Promise
     const result = await response.json() as OpenAIAnalysisResponse;
     
     if (!result.choices || result.choices.length === 0) {
-      throw new Error('No analysis results returned from OpenAI');
+      return { text: 'No analysis results returned from OpenAI', success: false };
     }
     
-    return result.choices[0].message.content;
+    const content = result.choices[0].message.content;
+    
+    // Check if the content indicates an inability to analyze the image
+    if (content.toLowerCase().includes('unable to analyze') || 
+        content.toLowerCase().includes('cannot analyze') || 
+        content.toLowerCase().includes('could not analyze') ||
+        content.toLowerCase().includes('not able to analyze') ||
+        content.toLowerCase().includes('cannot see') ||
+        content.toLowerCase().includes('cannot identify') ||
+        content.toLowerCase().includes('unclear image') ||
+        content.toLowerCase().includes('no visible')) {
+      return { text: content, success: false };
+    }
+    
+    return { text: content, success: true };
   } catch (error) {
     logError('analyzeImage', error as Error);
-    throw error;
+    return { text: (error as Error).message, success: false };
   }
 }
 

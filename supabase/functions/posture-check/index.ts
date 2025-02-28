@@ -28,19 +28,24 @@ serve(async (req) => {
     }
     
     // Analyze image with OpenAI
-    const analysisText = await analyzeImage(requestData.image, postureCheckPrompt);
+    const analysisResult = await analyzeImage(requestData.image, postureCheckPrompt);
+    
+    // Return error if analysis was unsuccessful
+    if (!analysisResult.success) {
+      return errorResponse(`Unable to analyze the posture image: ${analysisResult.text}`, 400);
+    }
     
     // Parse the analysis results
-    const parsedResults = parseAnalysisResults(analysisText);
+    const parsedResults = parseAnalysisResults(analysisResult.text);
     
     // Extract posture-specific information
     const postureResponse: PostureCheckResponse = {
       ...parsedResults,
       created_at: new Date().toISOString(),
-      postureIssues: extractPostureIssues(analysisText),
-      postureScore: extractPostureScore(analysisText),
-      exerciseRecommendations: extractExerciseRecommendations(analysisText),
-      rawAnalysis: analysisText, // Add raw analysis for database storage
+      postureIssues: extractPostureIssues(analysisResult.text),
+      postureScore: extractPostureScore(analysisResult.text),
+      exerciseRecommendations: extractExerciseRecommendations(analysisResult.text),
+      rawAnalysis: analysisResult.text, // Add raw analysis for database storage
     };
     
     // Store analysis results in database

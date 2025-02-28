@@ -28,19 +28,24 @@ serve(async (req) => {
     }
     
     // Analyze image with OpenAI
-    const analysisText = await analyzeImage(requestData.image, skinTrackerPrompt);
+    const analysisResult = await analyzeImage(requestData.image, skinTrackerPrompt);
+    
+    // Return error if analysis was unsuccessful
+    if (!analysisResult.success) {
+      return errorResponse(`Unable to analyze the skin image: ${analysisResult.text}`, 400);
+    }
     
     // Parse the analysis results
-    const parsedResults = parseAnalysisResults(analysisText);
+    const parsedResults = parseAnalysisResults(analysisResult.text);
     
     // Extract skin-specific information
     const skinResponse: SkinTrackerResponse = {
       ...parsedResults,
       created_at: new Date().toISOString(),
-      skinConditions: extractSkinConditions(analysisText),
-      severityScore: extractSeverityScore(analysisText),
-      dermatologistRecommended: shouldRecommendDermatologist(analysisText, parsedResults.concerns),
-      rawAnalysis: analysisText, // Add raw analysis for database storage
+      skinConditions: extractSkinConditions(analysisResult.text),
+      severityScore: extractSeverityScore(analysisResult.text),
+      dermatologistRecommended: shouldRecommendDermatologist(analysisResult.text, parsedResults.concerns),
+      rawAnalysis: analysisResult.text, // Add raw analysis for database storage
     };
     
     // Store analysis results in database

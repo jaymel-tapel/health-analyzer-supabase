@@ -28,20 +28,25 @@ serve(async (req) => {
     }
     
     // Analyze image with OpenAI
-    const analysisText = await analyzeImage(requestData.image, poopHealthPrompt);
+    const analysisResult = await analyzeImage(requestData.image, poopHealthPrompt);
+    
+    // Return error if analysis was unsuccessful
+    if (!analysisResult.success) {
+      return errorResponse(`Unable to analyze the stool image: ${analysisResult.text}`, 400);
+    }
     
     // Parse the analysis results
-    const parsedResults = parseAnalysisResults(analysisText);
+    const parsedResults = parseAnalysisResults(analysisResult.text);
     
     // Extract stool-specific information
     const poopResponse: PoopHealthResponse = {
       ...parsedResults,
       created_at: new Date().toISOString(),
-      stoolType: extractBristolType(analysisText),
-      abnormalities: extractAbnormalities(analysisText),
-      hydrationIndicator: extractHydrationLevel(analysisText),
-      doctorConsultationRecommended: shouldRecommendDoctor(analysisText, parsedResults.concerns),
-      rawAnalysis: analysisText, // Add raw analysis for database storage
+      stoolType: extractBristolType(analysisResult.text),
+      abnormalities: extractAbnormalities(analysisResult.text),
+      hydrationIndicator: extractHydrationLevel(analysisResult.text),
+      doctorConsultationRecommended: shouldRecommendDoctor(analysisResult.text, parsedResults.concerns),
+      rawAnalysis: analysisResult.text, // Add raw analysis for database storage
     };
     
     // Store analysis results in database

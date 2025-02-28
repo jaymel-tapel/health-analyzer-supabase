@@ -28,19 +28,24 @@ serve(async (req) => {
     }
     
     // Analyze image with OpenAI
-    const analysisText = await analyzeImage(requestData.image, nutriSnapPrompt);
+    const analysisResult = await analyzeImage(requestData.image, nutriSnapPrompt);
+    
+    // Return error if analysis was unsuccessful
+    if (!analysisResult.success) {
+      return errorResponse(`Unable to analyze the food image: ${analysisResult.text}`, 400);
+    }
     
     // Parse the analysis results
-    const parsedResults = parseAnalysisResults(analysisText);
+    const parsedResults = parseAnalysisResults(analysisResult.text);
     
     // Extract nutrition-specific information
     const nutriResponse: NutriSnapResponse = {
       ...parsedResults,
       created_at: new Date().toISOString(),
-      foodItems: extractFoodItems(analysisText),
-      nutritionalInfo: extractNutritionalInfo(analysisText),
-      healthScore: extractHealthScore(analysisText),
-      rawAnalysis: analysisText, // Add raw analysis for database storage
+      foodItems: extractFoodItems(analysisResult.text),
+      nutritionalInfo: extractNutritionalInfo(analysisResult.text),
+      healthScore: extractHealthScore(analysisResult.text),
+      rawAnalysis: analysisResult.text, // Add raw analysis for database storage
     };
     
     // Store analysis results in database

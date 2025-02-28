@@ -28,19 +28,24 @@ serve(async (req) => {
     }
     
     // Analyze image with OpenAI
-    const analysisText = await analyzeImage(requestData.image, dentalCheckPrompt);
+    const analysisResult = await analyzeImage(requestData.image, dentalCheckPrompt);
+    
+    // Return error if analysis was unsuccessful
+    if (!analysisResult.success) {
+      return errorResponse(`Unable to analyze the dental image: ${analysisResult.text}`, 400);
+    }
     
     // Parse the analysis results
-    const parsedResults = parseAnalysisResults(analysisText);
+    const parsedResults = parseAnalysisResults(analysisResult.text);
     
     // Extract dental-specific information
     const dentalResponse: DentalCheckResponse = {
       ...parsedResults,
       created_at: new Date().toISOString(),
-      dentalIssues: extractDentalIssues(analysisText),
-      oralHygieneScore: extractOralHygieneScore(analysisText),
-      dentistRecommended: shouldRecommendDentist(analysisText, parsedResults.concerns),
-      rawAnalysis: analysisText, // Add raw analysis for database storage
+      dentalIssues: extractDentalIssues(analysisResult.text),
+      oralHygieneScore: extractOralHygieneScore(analysisResult.text),
+      dentistRecommended: shouldRecommendDentist(analysisResult.text, parsedResults.concerns),
+      rawAnalysis: analysisResult.text, // Add raw analysis for database storage
     };
     
     // Store analysis results in database
