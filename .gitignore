@@ -1,0 +1,50 @@
+# Deno
+.deno/
+
+# Supabase
+.supabase/
+
+# Environment
+.env
+.env.local
+.env.dev
+.env.prod
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+jspm_packages/
+
+# Build
+dist/
+build/
+out/
+
+# Cache
+.cache/
+.npm/
+
+# OS files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+ehthumbs_vista.db
+*.stackdump
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock 

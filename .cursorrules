@@ -1,0 +1,110 @@
+{
+  "name": "HealthAnalyzerAPI",
+  "description": "**Supabase Edge Functions Project with TypeScript**\nYou are an expert backend developer focused on producing clear, readable Supabase Edge Functions code. You always use the latest stable versions of Supabase, TypeScript, and the OpenAI API, and you are familiar with the latest features and best practices for serverless functions. You carefully provide accurate, factual, thoughtful answers, and are a genius at reasoning.\n\nTechnical preferences:\n- Always use kebab-case for function names and file names\n- Leverage Supabase Edge Functions for optimal performance\n- Use TypeScript for type safety and better developer experience\n- Implement proper error handling and logging for serverless environments\n- Follow the principle of single responsibility for each Edge Function\n- Structure code to minimize cold starts and optimize for fast execution\n\nGeneral preferences:\n- Follow the user's requirements carefully & to the letter\n- Always write correct, up-to-date, bug-free, fully functional and working, secure, performant and efficient code\n- Focus on reliability, security, and maintainability\n- Fully implement all requested functionality\n- Leave NO todo's, placeholders or missing pieces in the code\n- Be sure to reference file names\n- Be concise. Minimize any other prose\n- If you think there might not be a correct answer, you say so. If you do not know the answer, say so instead of guessing",
+  "root": "src",
+  "out": "dist",
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "outDir": "dist"
+  },
+  "folders": [
+    {
+      "name": "supabase",
+      "path": "supabase",
+      "description": "Root Supabase project folder"
+    },
+    {
+      "name": "functions",
+      "path": "supabase/functions",
+      "description": "Edge Functions for each health analysis project"
+    },
+    {
+      "name": "shared",
+      "path": "supabase/functions/_shared",
+      "description": "Shared utilities, interfaces, and constants for Edge Functions"
+    },
+    {
+      "name": "dental-check",
+      "path": "supabase/functions/dental-check",
+      "description": "Edge Function for dental image analysis"
+    },
+    {
+      "name": "skin-tracker",
+      "path": "supabase/functions/skin-tracker",
+      "description": "Edge Function for skin condition analysis"
+    },
+    {
+      "name": "posture-check",
+      "path": "supabase/functions/posture-check",
+      "description": "Edge Function for posture analysis"
+    },
+    {
+      "name": "nutri-snap",
+      "path": "supabase/functions/nutri-snap",
+      "description": "Edge Function for food nutrition analysis"
+    },
+    {
+      "name": "poop-health",
+      "path": "supabase/functions/poop-health",
+      "description": "Edge Function for stool health analysis"
+    },
+    {
+      "name": "tests",
+      "path": "supabase/tests",
+      "description": "Test files for Edge Functions"
+    }
+  ],
+  "suggestions": {
+    "supabase/functions/*/index.ts": "This file should be the main entry point for the Edge Function. Import shared utilities and implement proper error handling.",
+    "supabase/functions/_shared/openai.ts": "This file should contain the OpenAI API integration. Ensure proper authentication and error handling.",
+    "supabase/functions/_shared/utils.ts": "Utility functions that can be shared across different Edge Functions.",
+    "supabase/functions/_shared/types.ts": "Define interface types for request/response objects and data models.",
+    "supabase/functions/_shared/prompts.ts": "Define OpenAI prompt templates for different health analysis scenarios."
+  },
+  "templates": [
+    {
+      "name": "EdgeFunction",
+      "description": "Create a new Supabase Edge Function",
+      "path": "supabase/functions/{{name}}/index.ts",
+      "content": "import { serve } from 'https://deno.land/std@0.177.0/http/server.ts';\nimport { corsHeaders } from '../_shared/cors.ts';\nimport { analyzeImage } from '../_shared/openai.ts';\nimport { errorResponse, successResponse } from '../_shared/utils.ts';\nimport { {{name}}Prompt } from '../_shared/prompts.ts';\n\nserve(async (req) => {\n  // Handle CORS preflight request\n  if (req.method === 'OPTIONS') {\n    return new Response('ok', { headers: corsHeaders });\n  }\n\n  try {\n    // Get request body\n    const { image } = await req.json();\n    \n    if (!image) {\n      return errorResponse('Image data is required', 400);\n    }\n    \n    // Analyze image with OpenAI\n    const analysis = await analyzeImage(image, {{name}}Prompt);\n    \n    // Return successful response\n    return successResponse({ analysis });\n  } catch (error) {\n    console.error(`Error in {{name}} function:`, error);\n    return errorResponse('Internal server error', 500);\n  }\n});"
+    },
+    {
+      "name": "OpenAIPrompt",
+      "description": "Create a new OpenAI prompt for image analysis",
+      "path": "supabase/functions/_shared/prompts.ts",
+      "content": "export const {{name}}Prompt = `\nYou are analyzing an image for {{description}}.\nPlease provide the following information:\n\n1. Detailed assessment of what you see in the image\n2. Potential issues or concerns to be aware of\n3. Recommendations based on what you observe\n\nBe professional, accurate, and compassionate in your analysis.\n`;"
+    },
+    {
+      "name": "SharedUtility",
+      "description": "Create shared utility functions",
+      "path": "supabase/functions/_shared/{{name}}.ts",
+      "content": "// Shared utility functions for {{name}}\n\n/**\n * Helper function for {{description}}\n */\nexport function {{functionName}}(params: any): any {\n  // Implementation\n}\n"
+    }
+  ],
+  "scripts": {
+    "start": "supabase functions serve",
+    "deploy": "supabase functions deploy",
+    "lint": "deno lint supabase/functions/**/*.ts",
+    "test": "deno test supabase/tests",
+    "format": "deno fmt supabase/functions/**/*.ts"
+  },
+  "devDependencies": {
+    "supabase": "^1.148.6",
+    "typescript": "^5.3.3"
+  }
+}
